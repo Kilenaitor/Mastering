@@ -549,7 +549,7 @@ class DefaultController extends Controller
            2 => array("pipe", "w")   // stderr is a pipe to write to
         );
         $logger = $this->get('logger');
-        $proc = proc_open('g++ -fno-gnu-keywords -Dasm=prohibited -D__asm__=prohibited --std=c++14 '.$file_name.' -o test.out;', $descriptorspec, $pipes);
+        $proc = proc_open('g++ -fno-gnu-keywords -Dasm=prohibited -D__asm__=prohibited --std=c++11 '.$file_name.' -o test.out;', $descriptorspec, $pipes);
         $return = "Compiler Error: ".stream_get_contents($pipes[2]);
         if(file_exists('test.out')) {
             proc_close($proc);
