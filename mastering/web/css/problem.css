@@ -1,0 +1,124 @@
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+html,
+body {
+	margin:0;
+	padding:0;
+	height:100%;
+}
+
+.problem {
+	padding-right: 15px;
+}
+
+#wrapper {
+	min-height:100%;
+	position:relative;
+}
+
+#header {
+}
+
+#problems {
+	padding-bottom: 50px;   /* Height of the footer element */
+}
+
+#footer
+{
+    height: 50px;
+    padding: 1em;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+    background: #333333;
+	position:absolute;
+	bottom:0;
+	left:0;
+    width: 100%;
+}
+	
+#footer p
+{
+    letter-spacing: 0.20em;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.80em;
+    color: #fff;
+}
+
+#textbox {
+    resize:none;
+    font-size:14px;
+    border:none;
+    margin-left: 25px; 
+    margin-bottom: 0px;
+    line-height: 18px;
+}
+
+textarea {
+    width: 90%;
+}
+
+.code {
+ width: 80%;
+}
+
+.row {
+    max-width: 100%;
+}
+
+.description {
+    padding-top: 40px;
+    padding-bottom: 20px;
+}
+
+.area {
+}
+
+label {
+    font-size: 18px;
+    color: #333333;
+    cursor: default;
+}
+
+.output {
+    padding-top: 20px;
+}
+
+.comparison {
+    min-width: 50%;
+}
+
+.description {
+    color: #4B4B4B;
+}
+
+.prompt {
+    padding-top: 20px;
+}
+
+.input {
+    font-weight: normal;
+    color: #333333;
+    background-color: #f8f8f8;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #dfdfdf;
+    padding: 1.5rem 1.5rem; 
+    width: 80%;
+}
+
+textarea:focus {
+    background: #fff;
+}
+
+.tiny {
+    margin-bottom: 0;
+}

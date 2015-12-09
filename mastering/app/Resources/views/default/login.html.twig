@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Login</title>
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" rel="stylesheet" />
+	{% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('css/landing.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/fonts.css') }}" />
+	{% endblock %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+	<div id="header-wrapper">
+		<div id="header" class="container">
+			<div id="logo">
+				<h1><a>Mastering</a></h1>
+                <img id="cpp_logo" src="{{ asset('images/c++.PNG') }}" alt="Example" />
+		</div>
+	</div>
+	<div id="wrapper1">
+		<div id="welcome" class="container">
+			<form method="post" action="">
+                <h1>Login</h1>
+				<p>
+					<input class="login" id="Username" name="username" type="text" placeholder="Username" ><br> <!-- Username input box -->
+					<input class="login" id="Password" name="password" type="password" placeholder="Password"><br> <!-- Password input box -->
+					<button type="submit" name="submit" class="login_button">Login</button> <!-- Login (submit) button -->
+				</p>
+				<span id="teacher">
+					Teacher? Click&nbsp;<a href="{{ path('teacher_login') }}">here.</a>
+				</span>
+			</form>
+            {% if error is defined %}<h4 class='alert' style="color:#BA4042">{{ error }}</h4>{% endif %}
+		</div>
+	</div>
+	<div id="copyright">
+		<div class="title">
+			<h2>Get in touch</h2>
+			<span class="byline">Check out our Facebook or send us an email</span> </div>
+		<ul class="contact">
+			<li><a href="#" class="icon icon-facebook"><span></span></a></li>
+			<li><a href="#" class="icon icon-envelope"><span></span></a></li>
+		</ul>
+		<p>&copy; MasteringC++. All rights reserved.</p>
+	</div>
+    {% block javascripts %}
+        <script src="{{ asset('js/code.js') }}"></script>
+    {% endblock %}
+</body>
+</html>

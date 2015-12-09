@@ -1,0 +1,80 @@
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+#wrapper {
+	min-height:100%;
+	position:relative;
+}
+
+#header {
+}
+
+#problems {
+	padding-bottom: 50px;   /* Height of the footer element */
+}
+
+#footer
+{
+    height: 50px;
+    padding: 1em;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+    background: #333333;
+	position:absolute;
+	bottom:0;
+	left:0;
+    width: 100%;
+}
+	
+#footer p
+{
+    letter-spacing: 0.20em;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.80em;
+    color: #fff;
+}
+
+#progress_content {
+    text-align: center;
+}
+
+.progress_container {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+#new_test {
+    margin-left: 50%;
+}
+
+#new_test:hover {
+    color: #00B314;
+}
+
+#remove_test {
+    margin-left: 50%;
+}
+
+#remove_test:hover {
+    color: #C91619;
+}
+
+.completed {
+    font-weight: bold;
+}
+
+#add_problem {
+    text-align: center;
+}
+
+#add_students {
+    text-align: center;
+}

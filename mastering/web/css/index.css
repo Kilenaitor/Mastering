@@ -1,0 +1,81 @@
+html,
+body {
+	margin:0;
+	padding:0;
+	height:100%;
+}
+
+.problem {
+	padding-right: 15px;
+}
+
+.accordion {
+    margin: 0;
+}
+
+.accordion .accordion-navigation > .content.active, 
+.accordion dd > .content.active {
+    display: block;
+    background: #FFF; 
+    width: 50%;
+    line-height: 50px;
+}
+
+.accordion-navigation {
+    background: #FFF;
+}
+
+#wrapper {
+	min-height:100%;
+	position:relative;
+}
+
+#header {
+}
+
+#problems {
+	padding-bottom: 50px;   /* Height of the footer element */
+}
+
+#footer
+{
+    height: 50px;
+    padding: 1em;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+    background: #333333;
+	position:absolute;
+	bottom:0;
+	left:0;
+    width: 100%;
+}
+	
+#footer p
+{
+    letter-spacing: 0.20em;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.80em;
+    color: #fff;
+}
+
+.fi-plus {
+    font-size: 10px;
+}
+
+.fi-minus {
+    font-size: 10px;
+}
+
+.accordion .fi-plus{
+  display:inline;
+}
+.accordion .fi-minus{
+  display:none;
+}
+.accordion .active .fi-plus{
+  display:none;
+}
+.accordion .active .fi-minus{
+  display:inline;
+}

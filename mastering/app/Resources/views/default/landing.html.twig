@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>MasteringC++</title>
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('css/landing.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+	<div id="header-wrapper">
+		<div id="header" class="container">
+			<div id="logo">
+				<h1><a>Mastering</a></h1>
+                <img id="cpp_logo" src="{{ asset('images/c++.PNG') }}" alt="Example" />
+		</div>
+	</div>
+	<div id="wrapper1">
+		<div id="welcome" class="container">
+			<div class="title">
+				<h2>Welcome to Mastering C++</h2>
+				<span class="byline">Practice problems for learning C++</span> </div>
+			<div class="content">
+				<p><strong>Mastering C++</strong> is a website made as a resouce for practicing simple problems using C++. Whether it be a simple logic question to a more advanced algorithms or recursion, <strong>Mastering C++</strong> is guaranteed to have fun and challenging problems for both the beginner and the seasoned expert. For Educators, <strong>Mastering C++</strong> provides a simple and intuitive interface for assigning homework and assessing results. For Students, this is your one stop for getting all the C++ practice you could ask for. Log in below using your access code to get started! We guarantee you'll have a blast!</p>
+                <a href=" {{ path("login") }}">
+                    <button class="button button-small" id="login_button">Login</button>
+                </a>
+	        </div>
+		</div>
+	</div>
+	<div id="wrapper3">
+		<div id="portfolio" class="container">
+			<div class="title">
+				<h2>About Us</h2>
+				<span class="byline">Your inside look at Mastering C++</span> </div>
+			<div class="pbox1">
+				<div class="column1">
+					<div class="box"> <span class="icon icon-cogs"></span>
+						<h3>Challenging but fun problems</h3>
+						<p>Problems are separated into multiple categories and are sorted by difficulty. 
+	                       Whether you're just starting, or just reviewing, we guarantee there's something for everyone.</p>
+					</div>
+				</div>
+				<div class="column2">
+					<div class="box"> <span class="icon icon-user"></span>
+						<h3>Made with Students in mind</h3>
+						<p>Mastering C++ was built from the start with what students want out of practice problems.
+	                        Our site is fast, responsive, and simple. Just code, compile, and run. That's it!</p>
+					</div>
+				</div>
+				<div class="column3">
+					<div class="box"> <span class="icon icon-cloud"></span>
+						<h3>No need to hit save</h3>
+						<p>Don't have time to finish a tricky problem? No problem. Mastering C++ stores all of your
+	                        current progress for you whenever you run code. Take off and come back right were you left off.</p>
+					</div>
+				</div>
+				<div class="column4">
+					<div class="box"> <span class="icon icon-signal"></span>
+						<h3>Perfect for teachers</h3>
+						<p>View individual student progress, manage your class, assign problems, and see progress. 
+	                        Mastering C++ includes all the features needed for anyone teaching C++.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="login_modal" style="display: none">
+		<div id="login_form">
+			<a title="Close" class="close" id="close3">X</a>
+			<form method="post" action="">
+				<p>
+					<input class="login" id="Username" name="username" type="text" placeholder="Username" ><br> <!-- Username input box -->
+					<input class="login" id="Password" name="password" type="password" placeholder="Password"><br> <!-- Password input box -->
+					<button type="submit" name="submit" class="login_button">Login</button> <!-- Login (submit) button -->
+				</p>
+				<span id="teacher">
+					Teacher? Click&nbsp;<a href="{{ path('teacher_login') }}">here.</a>
+				</span>
+			</form>
+            {% if error is defined %}<h4 class='alert'>{{ error }}</h4>{% endif %}
+		</div>
+	</div>
+	<div id="copyright">
+		<div class="title">
+			<h2>Get in touch</h2>
+			<span class="byline">Check out our Facebook or send us an email</span> </div>
+		<ul class="contact">
+			<li><a href="#" class="icon icon-facebook"><span></span></a></li>
+			<li><a href="#" class="icon icon-envelope"><span></span></a></li>
+		</ul>
+		<p>&copy; MasteringC++. All rights reserved.</p>
+	</div>
+    <script src="{{ asset('js/code.js') }}"></script>
+</body>
+</html>

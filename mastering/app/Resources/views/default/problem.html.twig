@@ -1,0 +1,161 @@
+<html lang="en" class="no-js">
+	<head>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('css/foundation.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/foundation-icons/foundation-icons.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/problem.css') }}" />
+        {% endblock %}
+        <title>{% block title %}MasteringC++{% endblock %}</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="{{ asset('js/vendor/modernizr.js') }}"></script>
+	</head>
+	<body style="font-family:Helvetica">
+        <div id="wrapper">
+            <div id="header">
+                <nav class="top-bar" data-topbar role="navigation" data-options="is_hover: false">
+                    <ul class="title-area">
+                        <li class="name">
+                            <h1><a>MasteringC++</a></h1>
+                        </li>
+                        <li class="toggle-topbar"><a href="#"><span>Menu</span></a></li>
+                    </ul>
+
+                    <section class="top-bar-section">
+                        <ul class="right">
+                            <li class="divider"></li>
+                            <li>
+                                <a href={{ path("homepage") }}>Home</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="has-dropdown">
+                                <a href="#">Signed in as <strong>{{ email }}</strong> {% if teacher %}&nbsp;<i>Teacher</i>{% endif %}</a>
+                                <ul class="dropdown">
+                                    <li class="active">
+                                        <a href="{{ path("logout") }}">Logout</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                </nav>
+            </div>
+            <div id="problems">
+                <div class="row">
+                    <div class="large-6 columns">
+                        <div class="description">
+                            <p>
+                                Add your code to the function below and when you think it's ready, click submit and see if your input works!<br>
+                                All libraries necessary to complete the task at hand will be included already.<br>
+                                Assume the standard namespace will be used for all assignments unless specificed otherwise.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-6 columns">
+                        <div class="code">
+                            <h3>{% if title is defined %}{{title}}{% else %}"Title goes here!"{% endif %}</h3>
+                            <p class="prompt">
+                                <strong>Prompt:</strong><br>
+                                {% if prompt is defined %}{{prompt}}{% else %}"Prompt goes here!"{% endif %}
+                            </p>
+                            <hr>
+                            <form name="codeform" action="" method="POST" class="input">
+                                <div class="area">
+                                    <label>{% if method is defined %}{{ method }}{% else %}"Method goes here!"{% endif %}</label>
+                                    <label>{</label>
+                            		<textarea id="textbox" class="textbox" name="code" rows="1" autofocus>{% if code is defined%}{{code}}{% endif %}</textarea>
+                                    <label>}</label>
+                                </div>
+                                <input type="hidden" value="void" name="type">
+                                <input type="hidden" value="basicTest()" name="name"><br>
+                                <input type="submit" value="Build and Run" class="button tiny">
+                            </form>
+                        </div>
+                    </div>
+                    <div class="large-6 columns">
+                		<div class="output">
+                	        {% if output is defined %}
+                	            {% if output %}
+                	            <div name="output">
+                	                <p>
+                	                    <p style="color:#ff0000">
+                	                        Oops. Something's not quite right.
+                	                    </p>
+                	                    <p>
+                	                        {{ output }}
+                	                    </p>
+                	                </p>
+                	            </div>
+                	            {% endif %}
+                	        {% endif %}
+                	        {% if pass is defined %}
+                	            {% if pass %}
+                	                <strong>Output:</strong><br>
+                	                <table class="comparison">
+                	                    <tr>
+                	                        <td>Test</td>
+                	                        <td>Expected</td>
+                	                        <td>Output</td>
+                	                        <td>&nbsp;</td>
+                	                    </tr>
+                	                    <div name="output">
+                	                        <p>
+                	                            {% set num = 0 %}
+                	                            {% set success = 0 %}
+                	                            {% for test in tests %}
+                                                    {% if test['hidden'] == 0 %}
+                                                        {% set num = num + 1 %}    
+                	                                    <tr>
+                	                                        <td width="auto">{{ test['function'] }}</td>
+                	                                        <td width="auto">{{ test['output'] }}</td>
+                	                                        <td width="auto">{{ inputs[loop.index0] }}</td>
+                	                                        <td style="width:30px;background-color:#{% if pass[loop.index0] == "true" %}33CC33{% set success = success + 1 %}{% else %}F20003{% endif %}">&nbsp;</td>
+                	                                    </tr>
+                                                    {% endif %}
+                	                            {% endfor %}
+                                                {% if num_others > 0 %}
+                                                    {% set num = num + 1 %}
+            	                                    <tr>
+            	                                        <td width="auto" colspan="3">Other Tests</td>
+            	                                        <td style="width:30px;background-color:#{% if others == true %}33CC33{% set success = success + 1 %}{% else %}F20003{% endif %}">&nbsp;</td>
+            	                                    </tr>
+                                                {% endif %}
+                	                        </p>
+                	                    </div>
+                	                </table>
+                	                {% if num == success %}
+                	                    <p style="color:#00cd00">
+                	                        All Clear!
+                	                    </p>
+                                    {% else %}
+                	                    <p style="color:#F20003">
+                	                        Not Quite
+                	                    </p>
+                	                {% endif %}
+                	            {% endif %}
+                	        {% endif %}
+                		</div>
+                    </div>
+                </div>
+            </div>
+            <div id="footer">
+                <p>&copy; MasteringC++. All rights reserved.</p>
+            </div>
+        </div>
+        {% block javascripts %}
+            <script src="{{ asset('js/code.js') }}"></script>
+            <script src="{{ asset('js/jquery.autosize.min.js') }}"></script>
+            <script src="{{ asset('js/vendor/fastclick.js') }}"></script>
+            <script src="{{ asset('js/foundation.min.js') }}"></script>
+        {% endblock %}
+        <script>
+          $(document).foundation({
+              accordion: {
+                  multi_expand: true,
+                  toggleable: true
+              }
+          });
+        </script>
+	</body>
+</html>
