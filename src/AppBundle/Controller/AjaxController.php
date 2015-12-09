@@ -7,7 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Security\Core\Util\SecureRandom;
+
+include 'random.php';
 
 class AjaxController extends Controller
 {
@@ -19,8 +20,7 @@ class AjaxController extends Controller
 		$session = $request->getSession();
 		if($session->get('teacher', false))
 		{
-			$generator = new SecureRandom();
-			$random = $generator->nextBytes(16);
+			$string = random_bytes(16);
 		
 			$email = $_POST['email'];
 			$key = bin2hex($random);
