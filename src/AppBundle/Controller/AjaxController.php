@@ -21,9 +21,8 @@ class AjaxController extends Controller
 		if($session->get('teacher', false))
 		{
 			$string = random_bytes(16);
-		
 			$email = $_POST['email'];
-			$key = bin2hex($random);
+			$key = bin2hex($string);
 			$teacher = $_POST['id'];
 		
 			$con = self::connect();
