@@ -63,10 +63,8 @@ class AjaxController extends Controller
 				$row = $rs->fetch_all(MYSQLI_ASSOC);
 				$teach = $row[0]['email'];
 				$link = "http://kilenaitor.science/signup"."?key=".$key;
-
-				$mailer = $this->get('swiftmailer.mailer.coding');
 			
-				$message = $mailer->createMessage()
+				$message = \Swift_Message::newInstance()
 					->setSubject('You have been invited to join CodingBat C++')
 					->setFrom('codingbatcpp@gmail.com')
 					->setTo($email)
@@ -78,7 +76,7 @@ class AjaxController extends Controller
 						'text/html'
 				);
 			
-				$mailer->send($message);
+				$this->get('mailer')->send($message);
 			
 				return new JsonResponse(array('status' => 200, 'message' => "Email sent!"));
 			}
@@ -171,12 +169,10 @@ class AjaxController extends Controller
 			$result = $stmt->affected_rows > 0;
 			
 			if($result)
-			{
-				$mailer = $this->get('swiftmailer.mailer.coding');
-				
+			{	
 				$link = "http://localhost:8000/code/teacher_signup"."?key=".$key;
 		
-				$message = $mailer->createMessage()
+				$message = \Swift_Message::newInstance()
 					->setSubject('Welcome to CodingBat C++')
 					->setFrom('codingbatcpp@gmail.com')
 					->setTo($email)
@@ -188,7 +184,7 @@ class AjaxController extends Controller
 						'text/html'
 				);
 				
-				$mailer->send($message);
+				$this->get('mailer')->send($message);
 			
 				return new JsonResponse(array('status' => 200, 'message' => "Email sent!"));
 			}
