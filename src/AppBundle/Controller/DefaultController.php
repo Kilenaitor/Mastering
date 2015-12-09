@@ -31,7 +31,7 @@ class DefaultController extends Controller
              else
                  return $this->redirect($this->generateUrl('login'));
          }
-         
+
          if(!($session->get("authorized", false)))
              return $this->render('default/landing.html.twig');
          else 
@@ -527,11 +527,13 @@ class DefaultController extends Controller
         chdir("/opt/files");
         error_log(getcwd());
         $myfile = fopen($file_name, 'w');
-        $header = "#include <iostream>\n#include <cmath>\n#include <vector>\nusing namespace std;\n\n";
+        $header = "#include <iostream>\n#include <cmath>\n#include <vector>\n#include <initializer_list>\nusing namespace std;\n\n";
+        $vector_print = "template<typename T>\nostream& operator<< (ostream& out, const vector<T>& v) {\nout << \"{\";\nsize_t last = v.size() - 1;\nfor(size_t i = 0; i < v.size(); ++i) {\nout << v[i];\nif (i != last) \nout << \",\";\n}\nout << \"}\";\nreturn out;\n}\n\n";
         $dec = $method."\n{\n";
         $end = "}\n";
         $main = "\n\nint main()\n{\n";
         fwrite($myfile, $header);
+        fwrite($myfile, $vector_print);
         fwrite($myfile, $dec);
         fwrite($myfile, "\t".str_replace("\r", '', $code)."\n");
         fwrite($myfile, $end);
@@ -547,7 +549,7 @@ class DefaultController extends Controller
            2 => array("pipe", "w")   // stderr is a pipe to write to
         );
         $logger = $this->get('logger');
-        $proc = proc_open('g++ -fno-gnu-keywords -Dasm=prohibited -D__asm__=prohibited --std=c++11 '.$file_name.' -o test.out;', $descriptorspec, $pipes);
+        $proc = proc_open('g++ -fno-gnu-keywords -Dasm=prohibited -D__asm__=prohibited --std=c++14 '.$file_name.' -o test.out;', $descriptorspec, $pipes);
         $return = "Compiler Error: ".stream_get_contents($pipes[2]);
         if(file_exists('test.out')) {
             proc_close($proc);
@@ -568,15 +570,15 @@ class DefaultController extends Controller
                 else {
                     $out = stream_get_contents($pipes[1]);
 					$logger->info($out);
-                    $out = preg_replace('/[\r\n]+/', ',', $out);
+                    $out = preg_replace('/[\r\n]+/', '~', $out);
 					$logger->info($out);
                     $output_string = "";
                     foreach($test as $val)
-                        $output_string .= $val["output"] . ",";
-					$compare = self::compare(rtrim($out, ","), $output_string);
+                        $output_string .= $val["output"] . "~";
+					$compare = self::compare(rtrim($out, "~"), $output_string);
                     $pass = $compare['result'];
 					$all = $compare['all'];
-                    $values = explode(',', $out);
+                    $values = explode('~', $out);
                     $return = "";
                 }
                 fclose($pipes[1]);
@@ -600,8 +602,8 @@ class DefaultController extends Controller
 		$counter = 0;
         $result = array();
         
-        $initial = explode(',', $initial);
-        $compare = explode(',', $compare);
+        $initial = explode('~', $initial);
+        $compare = explode('~', $compare);
         
         for($i = 0; $i < count($initial); $i++) 
 		{
