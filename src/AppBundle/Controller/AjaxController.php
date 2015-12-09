@@ -63,7 +63,7 @@ class AjaxController extends Controller
 				$rs = $stmt->get_result();
 				$row = $rs->fetch_all(MYSQLI_ASSOC);
 				$teach = $row[0]['email'];
-				$link = "http://kyleminshall.com/code/signup"."?key=".$key;
+				$link = "http://kilenaitor.science/signup"."?key=".$key;
 
 				$mailer = $this->get('swiftmailer.mailer.coding');
 			
