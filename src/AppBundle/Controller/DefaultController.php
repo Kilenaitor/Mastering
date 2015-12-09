@@ -83,6 +83,14 @@ class DefaultController extends Controller
              return $this->render('default/index.html.twig', array('problems' => $problems, 'email' => $session->get('username'), 'teacher' => $session->get('teacher', false)));
          }
      }
+     
+     /**
+     * @Route("/privacy", name="privacy")
+     */
+ 	public function privacyAction(Request $request)
+ 	{
+ 		return $this->render('default/privacy.html.twig');
+ 	}
     
      /**
       * @Route("/login", name="login")
@@ -259,83 +267,6 @@ class DefaultController extends Controller
 		
 		return $problems;
 	}
-    
-    private function validate($username, $password, $session) 
-	{
-        $con = self::connect();
-		
-        if(mysqli_connect_errno()) 
-		{
-		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
-		}
-        
-        $stmt = $con->prepare("SELECT * FROM users WHERE username=?");
-        $stmt -> bind_param('s',$username);
-        
-        $result = $stmt->execute() or trigger_error(mysqli_error()." ".$query);
-        $rs = $stmt->get_result();
-        $row = $rs->fetch_all(MYSQLI_ASSOC);
-        if(!isset($row[0]))
-        {
-            mysqli_close($con);
-            return false;
-        }
-        
-        $hash = $row[0]['password'];
-        
-		if(password_verify($password, $hash)) //Check to see if their entered password matches the one from their table entry
-		{
-			mysqli_close($con);
-            $session->set("authorized", true);
-			$session->set("username", $username);
-			$session->set("id", $row[0]['id']);
-			$session->set("teacher_id", $row[0]['teacher']);
-            return true;
-		}
-		else
-		{
-			mysqli_close($con);
-			return false;
-		}
-    }
-	
-    private function validate_teacher($username, $password, $session) 
-	{
-        $con = self::connect();
-		
-        if(mysqli_connect_errno()) 
-		{
-		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
-		}
-        
-        $stmt = $con->prepare("SELECT * FROM teachers WHERE username=?");
-        $stmt -> bind_param('s',$username);
-        
-        $result = $stmt->execute() or trigger_error(mysqli_error()." ".$query);
-        $rs = $stmt->get_result();
-        $row = $rs->fetch_all(MYSQLI_ASSOC);
-        if(!isset($row[0]))
-        {
-            mysqli_close($con);
-            return false;
-        }
-        $hash = $row[0]['password'];
-        
-		if(password_verify($password, $hash)) //Check to see if their entered password matches the one from their table entry
-		{
-			mysqli_close($con);
-            $session->set("authorized", true);
-			$session->set("username", $username);
-			$session->set("id", $row[0]['id']);
-			$session->set("teacher", true);
-            return true;
-		}
-		else
-		{
-			mysqli_close($con);
-			return false;
-		}
-    }
 	
     /**
      * @Route("/signup", name="signup")
@@ -508,6 +439,83 @@ class DefaultController extends Controller
         $session = $request->getSession();
         $session->clear();
         return $this->redirect($this->generateUrl('homepage'));
+    }
+    
+    private function validate($username, $password, $session) 
+	{
+        $con = self::connect();
+		
+        if(mysqli_connect_errno()) 
+		{
+		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
+		}
+        
+        $stmt = $con->prepare("SELECT * FROM users WHERE username=?");
+        $stmt -> bind_param('s',$username);
+        
+        $result = $stmt->execute() or trigger_error(mysqli_error()." ".$query);
+        $rs = $stmt->get_result();
+        $row = $rs->fetch_all(MYSQLI_ASSOC);
+        if(!isset($row[0]))
+        {
+            mysqli_close($con);
+            return false;
+        }
+        
+        $hash = $row[0]['password'];
+        
+		if(password_verify($password, $hash)) //Check to see if their entered password matches the one from their table entry
+		{
+			mysqli_close($con);
+            $session->set("authorized", true);
+			$session->set("username", $username);
+			$session->set("id", $row[0]['id']);
+			$session->set("teacher_id", $row[0]['teacher']);
+            return true;
+		}
+		else
+		{
+			mysqli_close($con);
+			return false;
+		}
+    }
+	
+    private function validate_teacher($username, $password, $session) 
+	{
+        $con = self::connect();
+		
+        if(mysqli_connect_errno()) 
+		{
+		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
+		}
+        
+        $stmt = $con->prepare("SELECT * FROM teachers WHERE username=?");
+        $stmt -> bind_param('s',$username);
+        
+        $result = $stmt->execute() or trigger_error(mysqli_error()." ".$query);
+        $rs = $stmt->get_result();
+        $row = $rs->fetch_all(MYSQLI_ASSOC);
+        if(!isset($row[0]))
+        {
+            mysqli_close($con);
+            return false;
+        }
+        $hash = $row[0]['password'];
+        
+		if(password_verify($password, $hash)) //Check to see if their entered password matches the one from their table entry
+		{
+			mysqli_close($con);
+            $session->set("authorized", true);
+			$session->set("username", $username);
+			$session->set("id", $row[0]['id']);
+			$session->set("teacher", true);
+            return true;
+		}
+		else
+		{
+			mysqli_close($con);
+			return false;
+		}
     }
     
     private function evaluate($code, $method, $test, $timeout)
