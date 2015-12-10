@@ -165,7 +165,7 @@ class DefaultController extends Controller
         $tests = $row;
         
         if($_POST && isset($_POST['code'])) {
-            $return = self::evaluate($_POST['code'], $method, $tests, $timeout);
+            $return = self::evaluate($_POST['code'], $method, $tests, $timeout, $session->get('username', false));
             $other_tests = 0;
             $pass_others = true;
             foreach($tests as $index => $test) {
@@ -518,12 +518,11 @@ class DefaultController extends Controller
 		}
     }
     
-    private function evaluate($code, $method, $test, $timeout)
+    private function evaluate($code, $method, $test, $timeout, $username)
     {
         $pass = false;
         $values = "";
-        $date = date("Ymdhms");
-        $file_name = $date.".cpp";
+        $file_name = $username.".cpp";
         chdir("/opt/files");
         error_log(getcwd());
         $myfile = fopen($file_name, 'w');
