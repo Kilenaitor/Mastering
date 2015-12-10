@@ -308,7 +308,7 @@ class DefaultController extends Controller
 			
 			$query = "INSERT INTO users (`email`,`username`, `password`, `teacher`) VALUES ('$email', ?, ?, '$teacher')";
 			$stmt = $con->prepare($query);
-			$stmt->bind_param('ss', $username, $password);
+			$stmt->bind_param('ss', strtolower($username), $password);
 			$rs = $stmt->execute();
 			$stmt->close();
 			$stmt = $con->prepare("UPDATE permission SET used=1 WHERE `key`='$key'");
@@ -451,7 +451,7 @@ class DefaultController extends Controller
 		}
         
         $stmt = $con->prepare("SELECT * FROM users WHERE username=?");
-        $stmt -> bind_param('s',$username);
+        $stmt -> bind_param('s', strtolower($username));
         
         $result = $stmt->execute() or trigger_error(mysqli_error()." ".$query);
         $rs = $stmt->get_result();
