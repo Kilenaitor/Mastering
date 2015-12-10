@@ -563,11 +563,12 @@ class DefaultController extends Controller
                 $all = false;
             } 
             else {
-                if(!empty(stream_get_contents($pipes[2]))) {
-                    $return = stream_get_contents($pipes[2]);
+                $return = stream_get_contents($pipes[2]);
+                if(!empty($return)) {
                     $all = false;
                 }   
                 else {
+                    $return = "";
                     $out = stream_get_contents($pipes[1]);
 					$logger->info($out);
                     $out = preg_replace('/[\r\n]+/', '~', $out);
