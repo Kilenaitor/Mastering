@@ -6,6 +6,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
+include("database.php");
+
 class DefaultController extends Controller
 {
     /**
@@ -617,6 +619,6 @@ class DefaultController extends Controller
 	
     private function connect()
     {
-        return mysqli_connect("localhost","KyleM","Minshall1!", "Site"); //Connect to database
+        return mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB); //Connect to database
     }
 }
