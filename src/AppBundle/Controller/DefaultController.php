@@ -619,6 +619,7 @@ class DefaultController extends Controller
 	
     private function connect()
     {
-        return mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB); //Connect to database
+        return mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB); 
+        //Connect to database
     }
 }
