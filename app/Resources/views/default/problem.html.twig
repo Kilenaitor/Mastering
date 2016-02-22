@@ -41,7 +41,7 @@
             </div>
             <div id="problems">
                 <div class="row">
-                    <div class="large-6 columns">
+                    <div class="large-8 columns">
                         <div class="description">
                             <p>
                                 Add your code to the function below and when you think it's ready, click submit and see if your input works!<br>
@@ -64,12 +64,12 @@
                                 <div class="area">
                                     <label>{% if method is defined %}{{ method }}{% else %}"Method goes here!"{% endif %}</label>
                                     <label>{</label>
-                            		<textarea id="textbox" class="textbox" name="code" rows="1" autofocus>{% if code is defined%}{{code}}{% endif %}</textarea>
+                            		<textarea id="textbox" class="textbox" name="code" rows="2" autofocus>{% if code is defined%}{{code}}{% endif %}</textarea>
                                     <label>}</label>
                                 </div>
                                 <input type="hidden" value="void" name="type">
                                 <input type="hidden" value="basicTest()" name="name"><br>
-                                <input type="submit" value="Build and Run" class="button tiny">
+                                <input type="submit" value="Build and Run" class="button small">
                             </form>
                         </div>
                     </div>
@@ -138,6 +138,16 @@
                 		</div>
                     </div>
                 </div>
+                {% if next_problem %}
+                <div class="row">
+                    <div class="large-6 columns">
+                        <br>
+                        <a href="{{ path("problem", {'problem' : next_problem}) }}" class="button tiny info">
+                            Next Problem 
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
             </div>
             <div id="footer">
                 <p>&copy; MasteringC++. All rights reserved.</p>

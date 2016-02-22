@@ -21,12 +21,13 @@ class DefaultController extends Controller
          
          if($_POST && !empty($_POST['username']) && !empty($_POST['password']))
          {
-             $response = self::validate($_POST['username'], $_POST['password'], $session);	//Validate the user when they click submit on the login
+             $response = self::validate($_POST['username'], $_POST['password'], $session);	
+             //Validate the user when they click submit on the login
 
              if(isset($response) && $response)
              {
                  goto authorized; //http://xkcd.com/292/
-                                  //This is a totally fine use for it. authorized is on line 35
+                 //This is a totally fine use for it. authorized is on line 43
              }  
              else if(isset($response))
                  return $this->render('default/login.html.twig', array('error' => "Wrong username or password"));
@@ -47,42 +48,51 @@ class DefaultController extends Controller
     			 $teacher = $session->get('teacher_id', 0);
         
              $con = self::connect();
- 
-             $problems = array();
- 
-             $categories = array();
-             $result = mysqli_query($con, "SELECT category FROM problems GROUP BY category, sorting ORDER BY sorting ASC");
- 
-             while($row = $result->fetch_assoc()) {
-                 $categories[] = $row['category'];
-             }
+             
+             // Array storing the id of all of the categories that we have
+             $categories = mysqli_fetch_all(mysqli_query($con, "SELECT * FROM categories;"), MYSQLI_ASSOC);
  
              $id = $session->get('id');
-             $temp = mysqli_fetch_all(mysqli_query($con, "SELECT title FROM progress LEFT JOIN problems ON problem_id = problems.id WHERE user_id=$id"), MYSQLI_ASSOC);
+             
+             /**
+              * Create a temporary progress array to store the progress
+              * of the user. 
+              * Grab the title of the problem to cross-compare when we sort
+              * through them all.
+              */
              $done = array();
- 
-             foreach($temp as $key => $value)
+             $progress = mysqli_fetch_all(mysqli_query($con, "SELECT title FROM progress LEFT JOIN problems ON problem_id = problems.id WHERE user_id=$id;"), MYSQLI_ASSOC);
+             foreach($progress as $key => $value)
                  $done[] = $value['title'];
- 
+             
              foreach($categories as $category)
              {
                  $titles = array();
                  $ids = array();
-	 
-                 $result = mysqli_query($con, "SELECT id,title,category,teacher FROM problems WHERE (teacher=0 OR teacher=$teacher) AND category='$category'");
+	             
+                 $category_id = $category['id'];
+                 $category_name = ucwords($category['name']);
+                 
+                 $result = mysqli_query($con, "SELECT id, title, teacher FROM problems WHERE (teacher=0 OR teacher=$teacher) AND category_id='$category_id';");
  
-                 while($row = $result->fetch_assoc()) 
+                 if(mysqli_num_rows($result) > 0)
                  {
-                     if(in_array($row['title'], $done) && !$session->get('teacher', false))
-                         $titles[$row['title']] = true;
-                     else
-                         $titles[$row['title']] = false;
-                     $ids[] = $row['id'];
+                     while($row = $result->fetch_assoc()) 
+                     {
+                         if(in_array($row['title'], $done) && !$session->get('teacher', false))
+                             $titles[$row['title']] = true;
+                         else
+                             $titles[$row['title']] = false;
+                         $ids[] = $row['id'];
+                     }
+                     $problems["$category_name"] = array('titles' => $titles, 'ids' => $ids);
                  }
-                 $category = ucfirst($category);
-                 $problems[$category] = array('titles' => $titles, 'ids' => $ids);
              }
-             return $this->render('default/index.html.twig', array('problems' => $problems, 'email' => $session->get('username'), 'teacher' => $session->get('teacher', false)));
+             
+             return $this->render('default/index.html.twig', 
+                 array('problems' => $problems, 
+                       'email' => $session->get('username'), 
+                       'teacher' => $session->get('teacher', false)));
          }
      }
      
@@ -156,8 +166,9 @@ class DefaultController extends Controller
         $prompt 	= $row['prompt'];
         $method		= $row['method'];
         $timeout	= $row['timeout'];
+        $next_pid   = $row['next_problem_id'];
         
-        $stmt = $con->prepare("SELECT function,output,hidden FROM tests WHERE problem_id=?");
+        $stmt = $con->prepare("SELECT function, output, hidden FROM tests WHERE problem_id=?;");
         $stmt -> bind_param('s',$problem);
         
         $result = $stmt->execute() or trigger_error(mysqli_error());
@@ -203,9 +214,9 @@ class DefaultController extends Controller
         if(isset($return)) {
 			if($all && !$session->get('teacher')) {
 				$id = $session->get('id');
-				$check = mysqli_query($con, "SELECT * FROM progress WHERE user_id='$id' AND problem_id='$problem'");
+				$check = mysqli_query($con, "SELECT * FROM progress WHERE user_id='$id' AND problem_id='$problem';");
 				if(mysqli_num_rows($check) == 0) {
-					$query = "INSERT INTO progress (`user_id`, `problem_id`) VALUES ('$id', '$problem')";
+					$query = "INSERT INTO progress (`user_id`, `problem_id`) VALUES ('$id', '$problem');";
 					$stmt = $con->prepare($query);
 					$stmt->execute();
 				}
@@ -213,11 +224,11 @@ class DefaultController extends Controller
             return $this->render('default/problem.html.twig', 
                     array('title' => $title, 'prompt' => $prompt, 'method' => $method, 'tests' => $tests, 
 					'output' => $error, 'code' => $return['code'], 'pass' => $pass, 'num_others' => $other_tests, 'others' => $pass_others,
-					'inputs' => $inputs, 'email' => $session->get('username'), 'teacher' => $session->get('teacher',false)));
+					'inputs' => $inputs, 'next_problem' => $next_pid, 'email' => $session->get('username'), 'teacher' => $session->get('teacher',false)));
 		}
         else
             return $this->render('default/problem.html.twig', 
-                            array('title' => $title, 'prompt' => $prompt, 'method' => $method, 
+                            array('title' => $title, 'prompt' => $prompt, 'method' => $method, 'next_problem' => $next_pid,
 							'email' => $session->get('username'), 'teacher' => $session->get('teacher',false)));
         
     }
@@ -243,7 +254,7 @@ class DefaultController extends Controller
         if(mysqli_connect_errno()) 
 		  echo "Failed to connect to MySQL: " . mysqli_connect_error();
 		
-		$stmt = $con->prepare("SELECT id, email, username FROM users WHERE teacher=?");
+		$stmt = $con->prepare("SELECT id, email, username FROM users WHERE teacher=?;");
 		$stmt->bind_param('i', $id);
 		
 		$result = $stmt->execute() or trigger_error(mysqli_error());
@@ -260,7 +271,7 @@ class DefaultController extends Controller
         if(mysqli_connect_errno()) 
 		  echo "Failed to connect to MySQL: " . mysqli_connect_error();
 		
-		$stmt = $con->prepare("SELECT title, method FROM problems WHERE teacher=$id");
+		$stmt = $con->prepare("SELECT title, method FROM problems WHERE teacher=$id;");
 		
 		$result = $stmt->execute() or trigger_error(mysqli_error());
 		$rs = $stmt->get_result();
@@ -289,7 +300,7 @@ class DefaultController extends Controller
 	        if(mysqli_connect_errno()) 
 			  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
 			
-			$query = "SELECT * FROM users WHERE username=?";
+			$query = "SELECT * FROM users WHERE username=?;";
 			$stmt = $con->prepare($query);
 			$stmt->bind_param('s', $username);
 			$stmt->execute();
@@ -298,7 +309,7 @@ class DefaultController extends Controller
 				return $this->render('default/signup.html.twig', array('email' => $email, 'error' => false, 'message' => "Username has already been taken"));
 			$stmt->close();
             
-			$query = "SELECT teacher,email FROM permission WHERE `key`=?";
+			$query = "SELECT teacher,email FROM permission WHERE `key`=?;";
 			$stmt = $con->prepare($query);
 			$stmt->bind_param('s', $key);
 			$stmt->execute();
@@ -308,12 +319,12 @@ class DefaultController extends Controller
 			$email = $row[0]['email'];
             $password = password_hash($password, PASSWORD_DEFAULT);
 			
-			$query = "INSERT INTO users (`email`,`username`, `password`, `teacher`) VALUES ('$email', ?, ?, '$teacher')";
+			$query = "INSERT INTO users (`email`,`username`, `password`, `teacher`) VALUES ('$email', ?, ?, '$teacher');";
 			$stmt = $con->prepare($query);
 			$stmt->bind_param('ss', strtolower($username), $password);
 			$rs = $stmt->execute();
 			$stmt->close();
-			$stmt = $con->prepare("UPDATE permission SET used=1 WHERE `key`='$key'");
+			$stmt = $con->prepare("UPDATE permission SET used=1 WHERE `key`='$key';");
 			$stmt->execute();
 			return $this->redirect($this->generateUrl('homepage'));
 		}
@@ -326,7 +337,7 @@ class DefaultController extends Controller
 	        if(mysqli_connect_errno()) 
 			  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
 			
-			$query = "SELECT email FROM permission WHERE `key`=? AND used=0";
+			$query = "SELECT email FROM permission WHERE `key`=? AND used=0;";
 			$stmt = $con->prepare($query);
 			$stmt -> bind_param('s', $key);
 			
@@ -370,7 +381,7 @@ class DefaultController extends Controller
 	        if(mysqli_connect_errno()) 
 			  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
 			
-			$query = "SELECT * FROM teachers WHERE username=?";
+			$query = "SELECT * FROM teachers WHERE username=?;";
 			$stmt = $con->prepare($query);
 			$stmt->bind_param('s', $username);
 			$stmt->execute();
@@ -379,7 +390,7 @@ class DefaultController extends Controller
 				return $this->render('default/teacher_signup.html.twig', array('email' => $email, 'error' => false, 'message' => "Username has already been taken"));
 			
 			$stmt->close();
-			$query = "SELECT email FROM pem WHERE `key`=?";
+			$query = "SELECT email FROM pem WHERE `key`=?;";
 			$stmt = $con->prepare($query);
 			$stmt->bind_param('s', $key);
 			$stmt->execute();
@@ -388,12 +399,12 @@ class DefaultController extends Controller
 			$email = $row[0]['email'];
             $password = password_hash($password, PASSWORD_DEFAULT);
 			
-			$query = "INSERT INTO teachers (`email`,`username`, `password`) VALUES ('$email', ?, ?)";
+			$query = "INSERT INTO teachers (`email`,`username`, `password`) VALUES ('$email', ?, ?);";
 			$stmt = $con->prepare($query);
 			$stmt->bind_param('ss', $username, $password);
 			$rs = $stmt->execute();
 			$stmt->close();
-			$stmt = $con->prepare("UPDATE pem SET used=1 WHERE `key`='$key'");
+			$stmt = $con->prepare("UPDATE pem SET used=1 WHERE `key`='$key';");
 			$stmt->execute();
 			
 			$session = $this->getRequest()->getSession();
@@ -408,7 +419,7 @@ class DefaultController extends Controller
             if(mysqli_connect_errno()) 
     		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
 		
-    		$query = "SELECT email FROM pem WHERE `key`=? AND used=0";
+    		$query = "SELECT email FROM pem WHERE `key`=? AND used=0;";
     		$stmt = $con->prepare($query);
     		$stmt -> bind_param('s', $key);
 		
@@ -443,40 +454,94 @@ class DefaultController extends Controller
         return $this->redirect($this->generateUrl('homepage'));
     }
     
+    /**
+     * @Route("/forgot", name="forgot")
+     */ 
+    public function forgotAction(Request $request) 
+    {
+        if($_POST && !empty($_POST['email'])) {
+            
+            $con = self::connect();
+            
+            if(mysqli_connect_errno()) {
+    		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); 
+              //If that fails, display an error (obviously)
+    		}
+            
+            $email = mysql_real_escape_string($_POST['email']);
+            
+			$string = random_bytes(32);
+			$key = bin2hex($string);
+            
+            $query = "INSERT INTO password_reset (`email`, `key`) VALUES (?, '$key');";
+            $stmt = $con->prepare($query);
+            $stmt->bind_param('s', $email);
+            
+            $stmt->execute() or trigger_error(mysqli_error()." ".$query);
+            
+            $rows_affected = mysqli_affected_rows($con);
+            
+            if($rows_affected > 0) {
+                
+				$link = "http://kilenaitor.science/forgot"."?key=".$key;
+			
+				$message = \Swift_Message::newInstance()
+					->setSubject('MasteringC++: Reset your password')
+					->setFrom('codingbatcpp@gmail.com')
+					->setTo($email)
+					->setBody(
+						$this->renderView(
+						'Emails/forgot_password.html.twig',
+						array('link' => $link)
+						),
+						'text/html'
+				);
+			
+				$this->get('mailer')->send($message);
+                
+                return $this->render('default/forgot_password.html.twig', array('success' => true));
+            } else {
+                return $this->render('default/forgot_password.html.twig', array('success' => false));
+            }
+        }
+        return $this->render('default/forgot_password.html.twig');
+    }
+    
     private function validate($username, $password, $session) 
 	{
         $con = self::connect();
 		
-        if(mysqli_connect_errno()) 
-		{
-		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); //If that fails, display an error (obviously)
+        if(mysqli_connect_errno()) {
+		  echo "Failed to connect to MySQL: " . mysqli_connect_error(); 
+          //If that fails, display an error (obviously)
 		}
         
+        $username = strtolower($username);
+        
         $stmt = $con->prepare("SELECT * FROM users WHERE username=?");
-        $stmt -> bind_param('s', strtolower($username));
+        $stmt -> bind_param('s', $username);
         
         $result = $stmt->execute() or trigger_error(mysqli_error()." ".$query);
         $rs = $stmt->get_result();
         $row = $rs->fetch_all(MYSQLI_ASSOC);
-        if(!isset($row[0]))
-        {
+        
+        if(!isset($row[0])) {
             mysqli_close($con);
             return false;
         }
         
         $hash = $row[0]['password'];
         
-		if(password_verify($password, $hash)) //Check to see if their entered password matches the one from their table entry
-		{
+        //Check to see if their entered password 
+        //matches the one from their table entry
+		if(password_verify($password, $hash))  {
 			mysqli_close($con);
             $session->set("authorized", true);
 			$session->set("username", $username);
 			$session->set("id", $row[0]['id']);
 			$session->set("teacher_id", $row[0]['teacher']);
             return true;
-		}
-		else
-		{
+		} else {
 			mysqli_close($con);
 			return false;
 		}

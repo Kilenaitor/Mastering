@@ -244,12 +244,12 @@ class AjaxController extends Controller
 				$tests 		= $_POST['test'];
 				$outputs 	= $_POST['output'];
                 $hiddens    = $_POST['hidden'];
-				$category	= "custom";
+				$category	= 22;
 				$teacher	= $session->get('id');
 			
 				$query = "INSERT INTO problems (`title`, `prompt`, `method`, `category`, `teacher`) VALUES (?,?,?,?,?)";
 				$stmt = $con->prepare($query);
-				$stmt->bind_param('ssssi', $title, $prompt, $method, $category, $teacher);
+				$stmt->bind_param('sssii', $title, $prompt, $method, $category, $teacher);
 				$stmt->execute();
                 
 			    $problem_id = mysqli_insert_id($con);
