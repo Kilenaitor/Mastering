@@ -9,3 +9,5 @@
 !var/sessions/.gitkeep
 /phpunit.xml
 database.php
+*.sql
+.DS_Store

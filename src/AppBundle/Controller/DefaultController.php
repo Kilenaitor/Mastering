@@ -459,6 +459,17 @@ class DefaultController extends Controller
      */ 
     public function forgotAction(Request $request) 
     {
+        if($_POST && !empty($_GET['key']) && !empty($_POST['new_password']) && !empty($_POST['new_password_conf'])) {
+            $password = $_POST['new_password'];
+            $password_conf = $_POST['new_password_conf'];
+            
+            if($password !== $password_conf) {
+                return $this->render('default/forgot_password.html.twig', array('key' => true, 'success' => false, 'error' => "Passwords do not match"));
+            }
+            
+            
+            
+        }
         if($_POST && !empty($_POST['email'])) {
             
             $con = self::connect();
@@ -472,6 +483,16 @@ class DefaultController extends Controller
             
 			$string = random_bytes(32);
 			$key = bin2hex($string);
+            
+            $query = "SELECT id FROM users WHERE email=?;";
+            $stmt = $con->prepare($query);
+            $stmt->bind_param('s', $email);
+            $stmt->execute() or trigger_error(mysqli_error()." ".$query);
+            $result = $stmt->get_result();
+            
+            if($result->num_rows !== 1) {
+                return $this->render('default/forgot_password.html.twig', array('success' => false, 'key' => false, 'not_found' => true));
+            }
             
             $query = "INSERT INTO password_reset (`email`, `key`) VALUES (?, '$key');";
             $stmt = $con->prepare($query);
@@ -499,10 +520,13 @@ class DefaultController extends Controller
 			
 				$this->get('mailer')->send($message);
                 
-                return $this->render('default/forgot_password.html.twig', array('success' => true));
+                return $this->render('default/forgot_password.html.twig', array('success' => true, 'key' => false));
             } else {
-                return $this->render('default/forgot_password.html.twig', array('success' => false));
+                return $this->render('default/forgot_password.html.twig', array('success' => false, 'key' => false));
             }
+        }
+        if($_GET && !empty($_GET['key'])) {
+            return $this->render('default/forgot_password.html.twig', array('key' => true));
         }
         return $this->render('default/forgot_password.html.twig');
     }
